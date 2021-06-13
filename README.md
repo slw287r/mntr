@@ -4,8 +4,8 @@
 * CPU: Total in %
 
 ## Requirements
-    - Linux OS
-    - procps
+- Linux OS
+- procps
 
 ## Usage
 - by process name
