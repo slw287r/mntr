@@ -4,22 +4,22 @@
 * CPU: Total in %
 
 ## Requirements
-    - Linux OS
-    - procps
+- Linux OS
+- procps
 
 ## Usage
-    - by process name
-    ```
-    mntr <cmd_name>
-    ```
+- by process name
 
-    - by process pid
-    ```
-    mntr <process_pid>
-    ```
+```
+mntr <cmd_name>
+```
 
-    - by run a program
-    ```
-    mntr <cmd> <args> ...
-    ```
+- by process pid
+```
+mntr <process_pid>
+```
 
+- by run a program
+```
+mntr <cmd> <args> ...
+```
