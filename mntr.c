@@ -23,9 +23,10 @@
 
 #include "thpool.h"
 #include "kvec.h"
-typedef kvec_t(pid_t) kv_t;
+#define ARR "\e[2m\xE2\x96\xB8\e[0m"
 
 extern char *__progname;
+typedef kvec_t(pid_t) kv_t;
 #define basename(str) (strrchr(str, '/') ? strrchr(str, '/') + 1 : str)
 
 typedef struct
@@ -260,12 +261,6 @@ void calc_usg_daemon(const pid_t ppid)
 	asprintf(&cmds, "%s", basename(cmd));
 	pids_of_ppid(ppid, &kv);
 	int n = kv_size(kv);
-	/*
-	putchar('>');
-	for (i = 0; i < n; ++i)
-		printf("%d ", kv_A(kv, i));
-	putchar('\n');
-	*/
 	usg_t *usg = calloc(n + 1, sizeof(usg_t));
 	usg[0].pid = ppid;
 	for (i = 0; i < n; ++i)
@@ -281,7 +276,7 @@ void calc_usg_daemon(const pid_t ppid)
 		pid_to_name(pid, cmd);
 		if (strcmp("sh",cmd) && strcmp("bash",cmd) &&
 				!strstr(cmd, "systemd") && !strstr(cmds, cmd))
-			asprintf(&cmds, "%s>%s", cmds, basename(cmd));
+			asprintf(&cmds, "%s%s%s", cmds, ARR, basename(cmd));
 		thpool_add_work(thpool, calc_usg, (void *)(uintptr_t)(usg + i + 1));
 	}
 	thpool_wait(thpool);
