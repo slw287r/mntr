@@ -1,7 +1,4 @@
 #define _GNU_SOURCE
-#ifndef __linux__
-#error "Only supports Linux platform!"
-#endif
 #include <stdio.h>
 #include <stdlib.h> 
 #include <stdio.h>
@@ -18,8 +15,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#ifdef __linux__
 #include <sys/sysinfo.h>
 #include <proc/readproc.h>
+#endif
 
 #include "thpool.h"
 #include "kvec.h"
@@ -36,7 +35,6 @@ typedef struct
     int stime_ticks;
     int cstime_ticks;
     int vsize; // virtual memory size in bytes
-    int rss; //Resident  Set  Size in bytes
 } pstat_t;
 
 typedef struct
@@ -45,23 +43,29 @@ typedef struct
 	double rss, shr, cpu;
 } usg_t;
 
+typedef struct
+{
+	long unsigned rss, shr;
+} mem_t;
+
 /*
  * read /proc data into the passed variables
  * returns 0 on success, -1 on error
 */
-void get_shr(const pid_t pid, long unsigned *shr)
+void get_mem(const pid_t pid, mem_t *mem)
 {
 	char *statm;
 	asprintf(&statm, "/proc/%d/statm", pid);
 	FILE *fpstat = fopen(statm, "r");
 	free(statm);
 	if (!fpstat) return;
-	if (fscanf(fpstat, "%*d %*d %ld %*[^\1]", shr) == EOF)
+	if (fscanf(fpstat, "%*d %ld %ld %*[^\1]", &mem->rss, &mem->shr) == EOF)
 	{
 		fclose(fpstat);
 		return;
 	}
-	*shr *= getpagesize();
+	mem->rss *= getpagesize();
+	mem->shr *= getpagesize();
 	fclose(fpstat);
 }
 
@@ -85,13 +89,12 @@ int get_usg(const pid_t pid, pstat_t* result)
 	//read values from /proc/pid/stat
 	bzero(result, sizeof(pstat_t));
 	if (fscanf(fpstat, "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu"
-			"%lu %ld %ld %*d %*d %*d %*d %*u %lu %ld",
+			"%lu %ld %ld %*d %*d %*d %*d %*u %lu %*d",
 			&result->utime_ticks, &result->stime_ticks,
 			&result->cutime_ticks, &result->cstime_ticks,
-			&result->vsize, &result->rss) == EOF)
+			&result->vsize) == EOF)
 		return -1;
 	fclose(fpstat);
-	result->rss *= getpagesize();
 	return 0;
 }
 
@@ -241,13 +244,14 @@ void calc_usg(void *_usg)
 	long unsigned shr = 0;
 	int up = 0, idle = 0;
 	pstat_t last, current;
-	get_shr(pid, &shr);
+	mem_t mem = {0, 0};
+	get_mem(pid, &mem);
 	int rl = get_usg(pid, &last);
 	sleep(1);
 	int rc = get_usg(pid, &current);
 	get_cpu(&current, &last, &up, &idle);
-	usg->rss = last.rss / pow(1024.0, 3);
-	usg->shr = shr / pow(1024.0, 3);
+	usg->rss = mem.rss / pow(1024.0, 3);
+	usg->shr = mem.shr / pow(1024.0, 3);
 	usg->cpu = !(rl + rc) ? up + idle : 0;
 }
 
