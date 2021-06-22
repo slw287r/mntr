@@ -22,7 +22,7 @@
 
 #include "thpool.h"
 #include "kvec.h"
-#define ARR "\e[2m\xE2\x96\xB8\e[0m"
+#define ARR "\e[2m\xE2\x97\x82\e[0m"
 
 extern char *__progname;
 typedef kvec_t(pid_t) kv_t;
