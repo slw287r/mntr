@@ -66,6 +66,7 @@ void get_mem(const pid_t pid, mem_t *mem)
 	}
 	mem->rss *= getpagesize();
 	mem->shr *= getpagesize();
+	mem->rss -= mem->shr;
 	fclose(fpstat);
 }
 
