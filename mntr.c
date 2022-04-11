@@ -530,7 +530,7 @@ void calc_usgd(const pid_t ppid, mn_t **mns, int *m, int *n, const double shm, F
 		if (!chk_pid(pid))
 			continue;
 		pid_to_name(pid, cmd);
-		if (strcmp("sh", cmd) && strcmp("bash", cmd) &&
+		if (strcmp("sh", cmd) && strcmp("bash", cmd) && strcmp("xargs", cmd) &&
 				!strstr(cmd, "systemd") && !strstr(cmds, cmd))
 		{
 			asprintf(&cmds, "%s%s%s", cmds, ARR, basename(cmd));
