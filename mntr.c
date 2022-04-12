@@ -27,7 +27,7 @@
 #define ARR "\e[2m\xE2\x97\x82\e[0m"
 #define INF "\e[1;34m\xE2\x84\xb9\e[0;0m"
 
-#define VERSION "0.2.0"
+#define VERSION "0.2.1"
 extern char *__progname;
 typedef kvec_t(pid_t) kv_t;
 #define GB(x) ((size_t) (x) << 30)
@@ -752,7 +752,7 @@ void draw_xlab(cairo_t *cr, const char *xlab)
 	double x, y;
 	cairo_text_extents_t ext;
 	cairo_set_font_size(cr, 10.0);
-	cairo_select_font_face(cr, "Open Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_text_extents(cr, xlab, &ext);
 	x = DIM_X / 2.0 - (ext.width / 2.0 + ext.x_bearing);
 	y = DIM_Y + MARGIN / 4.0 - (ext.height / 2 + ext.y_bearing);
@@ -765,7 +765,7 @@ void draw_ylab(cairo_t *cr, const char *ylab)
 	cairo_save(cr);
 	cairo_text_extents_t ext;
 	cairo_set_source_rgb(cr, 87 / 255.0, 122 / 255.0, 166 / 255.0);
-	cairo_select_font_face(cr, "Open Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	//cairo_translate(cr, MARGIN / 1.25, HEIGHT / 2.0); // translate origin to the center
 	cairo_translate(cr, MARGIN / 2.0, HEIGHT / 2.0); // translate origin to the center
 	cairo_rotate(cr, 3 * M_PI / 2.0);
@@ -781,7 +781,7 @@ void draw_y2lab(cairo_t *cr, const char *ylab)
 	cairo_save(cr);
 	cairo_text_extents_t ext;
 	cairo_set_source_rgb(cr, 166 / 255.0, 122 / 255.0, 87 / 255.0);
-	cairo_select_font_face(cr, "Open Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	cairo_translate(cr, MARGIN / 2, HEIGHT / 2.0); // translate origin to the center
 	cairo_rotate(cr, M_PI / 2.0); // was 270
 	cairo_text_extents(cr, ylab, &ext);
@@ -942,7 +942,7 @@ void draw_steps(cairo_t *cr, mn_t **mns, const int n)
 		cairo_translate(cr, MARGIN / 2.0, HEIGHT / 2.0); // translate origin to the center
 		cairo_rotate(cr, -M_PI / 6.0);
 		cairo_set_font_size(cr, 8.0);
-		cairo_select_font_face(cr, "Sans Mono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+		cairo_select_font_face(cr, "Mono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 		cairo_show_text(cr, mns[n - 1]->cmd);
 		cairo_restore(cr);
 	}
@@ -1000,7 +1000,7 @@ void draw_y2ticks(cairo_t *cr, const double ymax)
 	for (i = 0; i <= h; ++i)
 	{
 		sprintf(buf, "%d", (int)pow(10, h - i));
-		cairo_select_font_face(cr, "Open Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+		cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 		cairo_text_extents(cr, buf, &ext);
 		x = -ext.width - x_offset / 2.5;
 		y = 1 - (double)i / (h + 1);
@@ -1092,7 +1092,7 @@ void do_drawing(cairo_t *cr, mn_t **mns, const int n)
 	stoa(mns[n - 1]->ts - mns[0]->ts, &a);
 	asprintf(&a, "Runtime: %s", a);
 	cairo_set_font_size(cr, 8.0);
-	cairo_select_font_face(cr, "Open Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_text_extents(cr, a, &ext);
 	x = DIM_X - ext.width - ext.x_bearing;
 	y = DIM_Y + ext.height * 3 + ext.y_bearing; // bottom right
