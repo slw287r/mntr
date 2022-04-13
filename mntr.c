@@ -27,7 +27,7 @@
 #define ARR "\e[2m\xE2\x97\x82\e[0m"
 #define INF "\e[1;34m\xE2\x84\xb9\e[0;0m"
 
-#define VERSION "0.2.1"
+#define VERSION "0.2.2"
 extern char *__progname;
 typedef kvec_t(pid_t) kv_t;
 #define GB(x) ((size_t) (x) << 30)
@@ -83,13 +83,14 @@ void ttoa(time_t t);
 time_t atot(const char *a);
 void stoa(const int sec, char **a);
 bool use_shm(const pid_t pid);
+bool ends_with(const char *str, const char *sfx);
 
 int pgrep(const char *proc);
 int chk_pid(pid_t pid);
 int ncpid(const pid_t ppid);
 void get_cpid(const pid_t ppid, pid_t *pid);
 void pids_of_ppid(const pid_t ppid, kv_t *kv);
-int pid_to_name(const pid_t pid, char cmd[PATH_MAX]);
+void pid_to_name(const pid_t pid, char cmd[PATH_MAX]);
 
 unsigned nprocs();
 void calc_usg(void *_usg);
@@ -447,26 +448,44 @@ long size_of(const char *dirname)
 	return total_size;
 }
 
-int pid_to_name(const pid_t pid, char cmd[PATH_MAX])
+bool ends_with(const char *str, const char *sfx)
 {
-	int i = 0;
-	char *cmdline;
-	asprintf(&cmdline, "/proc/%lu/cmdline", pid);
-	FILE *fp = fopen(cmdline, "r");
-	if (!fp)
+	bool ret = false;
+	int str_len = strlen(str);
+	int sfx_len = strlen(sfx);
+	if ((str_len >= sfx_len) && (0 == strcasecmp(str + (str_len-sfx_len), sfx)))
+		ret = true;
+	return ret;
+}
+
+void pid_to_name(const pid_t pid, char cmd[PATH_MAX])
+{
+	char cmdline[PATH_MAX] = {0};
+	sprintf(cmdline, "/proc/%d/cmdline", pid);
+	if (!access(cmdline, R_OK))
 	{
-		cmd[0] = '\0';
-		return -1;
+		FILE *fp = fopen(cmdline, "r");
+		int i, j;
+		size_t sz = 0;
+		char *line = NULL;
+		if (fp && (j = getline(&line, &sz, fp)) >= 1)
+		{
+			char *p = line;
+			while (ends_with(p, "python") ||
+					ends_with(p, "python2") ||
+					ends_with(p, "python3") ||
+					ends_with(p, "perl") ||
+					ends_with(p, "java") ||
+					ends_with(p, "Rscript") ||
+					*p == '-')
+				p += strlen(p) + 1;
+			strcpy(cmd, basename(p));
+			free(line);
+			fclose(fp);
+		}
+		else
+			cmd[0] = '\0';
 	}
-	do
-	{
-		cmd[i] = fgetc(fp);
-		if(feof(fp) || cmd[i] == '\0' || i + 1 == PATH_MAX)
-			break;
-		++i;
-	} while(1);
-	cmd[i] = '\0';
-	fclose(fp);
 }
 
 unsigned nprocs()
@@ -506,8 +525,8 @@ void calc_usgd(const pid_t ppid, mn_t **mns, int *m, int *n, const double shm, F
 	kv_init(kv);
 	char cmd[PATH_MAX], *cmds = NULL, *cmds_ascii = NULL;
 	pid_to_name(ppid, cmd);
-	asprintf(&cmds, "%s", basename(cmd));
-	asprintf(&cmds_ascii, "%s", basename(cmd));
+	asprintf(&cmds, "%s", cmd);
+	asprintf(&cmds_ascii, "%s", cmd);
 	pids_of_ppid(ppid, &kv);
 	int kn = kv_size(kv);
 	usg_t *usg = calloc(kn + 1, sizeof(usg_t));
@@ -533,8 +552,8 @@ void calc_usgd(const pid_t ppid, mn_t **mns, int *m, int *n, const double shm, F
 		if (strcmp("sh", cmd) && strcmp("bash", cmd) && strcmp("xargs", cmd) &&
 				!strstr(cmd, "systemd") && !strstr(cmds, cmd))
 		{
-			asprintf(&cmds, "%s%s%s", cmds, ARR, basename(cmd));
-			asprintf(&cmds_ascii, "%s;%s", cmds_ascii, basename(cmd));
+			asprintf(&cmds, "%s%s%s", cmds, ARR, cmd);
+			asprintf(&cmds_ascii, "%s;%s", cmds_ascii, cmd);
 		}
 		thpool_add_work(thpool, calc_usg, (void *)(uintptr_t)(usg + i + 1));
 	}
