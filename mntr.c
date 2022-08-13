@@ -27,7 +27,7 @@
 #define ARR "\e[2m\xE2\x97\x82\e[0m"
 #define INF "\e[1;34m\xE2\x84\xb9\e[0;0m"
 
-#define VERSION "0.2.2"
+#define VERSION "0.2.3"
 extern char *__progname;
 typedef kvec_t(pid_t) kv_t;
 #define GB(x) ((size_t) (x) << 30)
@@ -590,11 +590,12 @@ void calc_usgd(const pid_t ppid, mn_t **mns, int *m, int *n, const double shm, F
 			strcpy(mn->cmd, q);
 		free(q);
 		mns[*n] = mn;
-		if ((*n)++ == *m)
+		if (*n + 1 == *m)
 		{
 			*m <<= 1;
 			mns = realloc(mns, *m * sizeof(mn_t *));
 		}
+		*n++;
 	}
 	free(cmds);
 	free(cmds_ascii);
@@ -679,11 +680,12 @@ void ldlg(const char *fn, mn_t **mns, int *m, int *n)
 		sscanf(line + 18, "%lf %lf %lf %s", &mn->rss, &mn->shr, &mn->cpu, mn->cmd);
 		mn->ts = atot(timestamp);
 		mns[*n] = mn;
-		if ((*n)++ == *m)
+		if (*n + 1 == *m)
 		{
 			*m <<= 1;
 			mns = realloc(mns, *m * sizeof(mn_t *));
 		}
+		*n++;
 	}
 	free(line);
 	fclose(fp);
