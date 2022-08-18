@@ -595,7 +595,7 @@ void calc_usgd(const pid_t ppid, mn_t **mns, int *m, int *n, const double shm, F
 			*m <<= 1;
 			mns = realloc(mns, *m * sizeof(mn_t *));
 		}
-		*n++;
+		(*n)++;
 	}
 	free(cmds);
 	free(cmds_ascii);
@@ -685,7 +685,7 @@ void ldlg(const char *fn, mn_t **mns, int *m, int *n)
 			*m <<= 1;
 			mns = realloc(mns, *m * sizeof(mn_t *));
 		}
-		*n++;
+		(*n)++;
 	}
 	free(line);
 	fclose(fp);
