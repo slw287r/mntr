@@ -823,7 +823,7 @@ void draw_cpu(cairo_t *cr, mn_t **mns, const int n)
 	cairo_set_source_rgb(cr, 87 / 255.0, 122 / 255.0, 166 / 255.0);
 	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 	// get max cpu usage
-	double cpu_max = 0;
+	double cpu_max = 100;
 	for (i = 0; i < n; ++i)
 		cpu_max = fmax(cpu_max, mns[i]->cpu);
 	if (cpu_max)
@@ -1081,7 +1081,7 @@ void do_drawing(cairo_t *cr, mn_t **mns, const int n)
 	draw_y2lab(cr, y2lab);
 	// get max cpu and mem
 	int i;
-	double cpu_max = 0, mem_max = 0;
+	double cpu_max = 100, mem_max = 0;
 	for (i = 0; i < n; ++i)
 	{
 		cpu_max = fmax(cpu_max, mns[i]->cpu);
@@ -1147,7 +1147,7 @@ void do_drawing(cairo_t *cr, mn_t **mns, const int n)
 	cairo_move_to(cr, x, y);
 	cairo_show_text(cr, a);
 	// draw legend
-	asprintf(&a, "- CPU");
+	asprintf(&a, "—CPU");
 	cairo_text_extents(cr, a, &ext);
 	x = DIM_X - ext.width * 1.25;
 	y = ext.height - ext.y_bearing * 1.5;
@@ -1155,14 +1155,14 @@ void do_drawing(cairo_t *cr, mn_t **mns, const int n)
 	cairo_move_to(cr, x, y);
 	cairo_show_text(cr, a);
 	
-	asprintf(&a, "- RSS");
+	asprintf(&a, "—RSS");
 	x = DIM_X - ext.width * 1.25;
 	y = ext.height - ext.y_bearing * 3.0;
 	cairo_set_source_rgb(cr, 166 / 255.0, 122 / 255.0, 87 / 255.0);
 	cairo_move_to(cr, x, y);
 	cairo_show_text(cr, a);
 
-	asprintf(&a, "- SHR");
+	asprintf(&a, "—SHR");
 	x = DIM_X - ext.width * 1.25;
 	y = ext.height - ext.y_bearing * 4.5;
 	cairo_set_source_rgb(cr, 218 / 255.0, 165 / 255.0, 32 / 255.0);
