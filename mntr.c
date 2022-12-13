@@ -1051,7 +1051,6 @@ void do_drawing(cairo_t *cr, mn_t **mns, const int n)
 	//cairo_set_source_rgb(cr, 0.25, 0.25, 0.25);
 	char xlab[] = "Timeline";
 	char ylab[] = "CPU (%)";
-	char y2lab[] = "Mem (G)";
 	// title
 	/*
 	cairo_set_font_size(cr, 10.0);
@@ -1078,7 +1077,6 @@ void do_drawing(cairo_t *cr, mn_t **mns, const int n)
 	draw_xlab(cr, xlab);
 	// ylab
 	draw_ylab(cr, ylab);
-	draw_y2lab(cr, y2lab);
 	// get max cpu and mem
 	int i;
 	double cpu_max = 100, mem_max = 0;
@@ -1087,6 +1085,9 @@ void do_drawing(cairo_t *cr, mn_t **mns, const int n)
 		cpu_max = fmax(cpu_max, mns[i]->cpu);
 		mem_max = fmax(mem_max, fmax(mns[i]->rss, mns[i]->shr));
 	}
+	char y2lab[NAME_MAX] = {'\0'};
+	snprintf(y2lab, NAME_MAX, "Mem (%c)", mem_max <= 1 ? 'M' : 'G');
+	draw_y2lab(cr, y2lab);
 	draw_steps(cr, mns, n);
 	draw_box(cr, 0, 0, DIM_X, DIM_Y);
 	// draw cpu
