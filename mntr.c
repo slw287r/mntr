@@ -97,6 +97,7 @@ void calc_usg(void *_usg);
 void calc_usgd(const pid_t ppid, mn_t **mns, int *m, int *n, const double shm, FILE *fp);
 
 long size_of(const char *fn);
+char *get_now(void);
 void get_mem(const pid_t pid, mem_t *mem);
 void get_cpu(const pstat_t *cur_usage, const pstat_t *last_usage, int *ucpu_usage, int *scpu_usage);
 int get_usg(const pid_t pid, pstat_t* result);
@@ -114,12 +115,13 @@ void draw_y2ticks(cairo_t *cr, const double ymax);
 void draw_cpu(cairo_t *cr, mn_t **mns, const int n);
 void draw_rss(cairo_t *cr, mn_t **mns, const int n);
 void draw_shr(cairo_t *cr, mn_t **mns, const int n);
-void do_drawing(cairo_t *cr, mn_t **mns, const int n);
+void do_drawing(cairo_t *cr, mn_t **mns, const int n, const char *st);
 
 void usage();
 
 int main(int argc, char *argv[])
 {
+	char *st = get_now();
 	int i, m = CHUNK, n = 0;
 	mn_t **mns = calloc(m, sizeof(mn_t *));
 	pid_t pid = 0, self = getpid();
@@ -228,7 +230,7 @@ int main(int argc, char *argv[])
 		cairo_t *cr = cairo_create(sf);
 		cairo_set_antialias(cr, CAIRO_ANTIALIAS_BEST);
 		// draw lines
-		do_drawing(cr, mns, n);
+		do_drawing(cr, mns, n, st);
 		// clean canvas
 		cairo_surface_destroy(sf);
 		cairo_destroy(cr);
@@ -237,6 +239,16 @@ int main(int argc, char *argv[])
 		free(svg);
 	}
 	free(mns);
+	free(st);
+	return 0;
+}
+
+char *get_now(void)
+{
+	char buf[80];
+	time_t now = time(0);
+	strftime(buf,sizeof(buf),"%D %X" ,localtime(&now));
+	return strdup(buf);
 }
 
 /*
@@ -1041,7 +1053,7 @@ void draw_y2ticks(cairo_t *cr, const double ymax)
 	cairo_stroke(cr);
 }
 
-void do_drawing(cairo_t *cr, mn_t **mns, const int n)
+void do_drawing(cairo_t *cr, mn_t **mns, const int n, const char *st)
 {
 	cairo_set_source_rgb (cr, 0, 0, 0);
 	cairo_translate(cr, MARGIN / 2, MARGIN / 2.0);
@@ -1118,6 +1130,13 @@ void do_drawing(cairo_t *cr, mn_t **mns, const int n)
 	cairo_text_extents(cr, a, &ext);
 	x = DIM_X - ext.width - ext.x_bearing;
 	y = DIM_Y + ext.height * 3 + ext.y_bearing; // bottom right
+	cairo_move_to(cr, x, y);
+	cairo_show_text(cr, a);
+	// start time
+	asprintf(&a, "Start: %s", st);
+	cairo_text_extents(cr, a, &ext);
+	x = ext.x_bearing;
+	y = DIM_Y + ext.height * 3 + ext.y_bearing; // bottom left
 	cairo_move_to(cr, x, y);
 	cairo_show_text(cr, a);
 	// legend
