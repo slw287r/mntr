@@ -42,7 +42,7 @@ typedef kvec_t(pid_t) kv_t;
 } while (0);
 
 
-#define CHUNK 4096
+#define CHUNK 0xFFFF
 // plot dimensions
 #define MARGIN 55
 #define DIM_X 605
