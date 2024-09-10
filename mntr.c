@@ -27,7 +27,7 @@
 #define ARR "\e[2m\xE2\x97\x82\e[0m"
 #define INF "\e[1;34m\xE2\x84\xb9\e[0;0m"
 
-#define VERSION "0.2.3"
+#define VERSION "0.2.4"
 extern char *__progname;
 typedef kvec_t(pid_t) kv_t;
 #define GB(x) ((size_t) (x) << 30)
