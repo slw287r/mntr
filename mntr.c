@@ -137,6 +137,18 @@ int main(int argc, char *argv[])
 	{
 		if (!strcmp(basename(argv[0]), basename(argv[1])))
 			return 0;
+		if (!strncmp(argv[1], "-h", 2) || !strncmp(argv[1], "--h", 3))
+		{
+			usage();
+			free(mns);
+			return 0;
+		}
+		if (!strncmp(argv[1], "-v", 2) || !strncmp(argv[1], "--v", 3))
+		{
+			puts(VERSION);
+			free(mns);
+			return 0;
+		}
 		if (strlen(argv[1]) == ndigit(argv[1]))
 			pid = atoi(argv[1]);
 		else
