@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
 					if ((kill(pid, 0) == -1 && errno == ESRCH))
 						break;
 					waitpid(pid, &status, WNOHANG|WUNTRACED);
-					if (!WIFEXITED(status))
+					if (WIFEXITED(status))
 						break;
 					else
 					{
