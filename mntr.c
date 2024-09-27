@@ -27,7 +27,7 @@
 #define ARR "\e[2m\xE2\x97\x82\e[0m"
 #define INF "\e[1;34m\xE2\x84\xb9\e[0;0m"
 
-#define VERSION "0.2.4"
+#define VERSION "0.2.5"
 extern char *__progname;
 typedef kvec_t(pid_t) kv_t;
 #define GB(x) ((size_t) (x) << 30)
@@ -1179,26 +1179,39 @@ void do_drawing(cairo_t *cr, mn_t **mns, const int n, const char *st)
 	cairo_move_to(cr, x, y);
 	cairo_show_text(cr, a);
 	// draw legend
+	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 	asprintf(&a, "—CPU");
 	cairo_text_extents(cr, a, &ext);
 	x = DIM_X - ext.width * 1.25;
 	y = ext.height - ext.y_bearing * 1.5;
-	cairo_set_source_rgb(cr, 87 / 255.0, 122 / 255.0, 166 / 255.0);
 	cairo_move_to(cr, x, y);
-	cairo_show_text(cr, a);
+	cairo_text_path(cr, a);
+	cairo_set_source_rgb(cr, 87 / 255.0, 122 / 255.0, 166 / 255.0);
+	cairo_fill_preserve (cr);
+	cairo_set_source_rgb (cr, 1, 1, 1); // white border
+	cairo_set_line_width (cr, .35);
+	cairo_stroke (cr);
 	
 	asprintf(&a, "—RSS");
 	x = DIM_X - ext.width * 1.25;
 	y = ext.height - ext.y_bearing * 3.0;
-	cairo_set_source_rgb(cr, 166 / 255.0, 122 / 255.0, 87 / 255.0);
 	cairo_move_to(cr, x, y);
-	cairo_show_text(cr, a);
+	cairo_text_path(cr, a);
+	cairo_set_source_rgb(cr, 166 / 255.0, 122 / 255.0, 87 / 255.0);
+	cairo_fill_preserve (cr);
+	cairo_set_source_rgb (cr, 1, 1, 1); // white border
+	cairo_set_line_width (cr, .35);
+	cairo_stroke (cr);
 
 	asprintf(&a, "—SHR");
 	x = DIM_X - ext.width * 1.25;
 	y = ext.height - ext.y_bearing * 4.5;
-	cairo_set_source_rgb(cr, 218 / 255.0, 165 / 255.0, 32 / 255.0);
 	cairo_move_to(cr, x, y);
-	cairo_show_text(cr, a);
+	cairo_text_path(cr, a);
+	cairo_set_source_rgb(cr, 218 / 255.0, 165 / 255.0, 32 / 255.0);
+	cairo_fill_preserve (cr);
+	cairo_set_source_rgb (cr, 1, 1, 1); // white border
+	cairo_set_line_width (cr, .35);
+	cairo_stroke (cr);
 	free(a);
 }
