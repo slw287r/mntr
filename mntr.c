@@ -27,7 +27,7 @@
 #define ARR "\e[2m\xE2\x97\x82\e[0m"
 #define INF "\e[1;34m\xE2\x84\xb9\e[0;0m"
 
-#define VERSION "0.2.5"
+#define VERSION "0.2.6"
 extern char *__progname;
 typedef kvec_t(pid_t) kv_t;
 #define GB(x) ((size_t) (x) << 30)
@@ -149,10 +149,18 @@ int main(int argc, char *argv[])
 			free(mns);
 			return 0;
 		}
-		if (strlen(argv[1]) == ndigit(argv[1]))
+		if (strlen(argv[1]) == ndigit(argv[1])) // process ID
 			pid = atoi(argv[1]);
 		else
-			pid = pgrep(argv[1]);
+		{
+			if (access(argv[1], X_OK))
+			{
+				fprintf(stderr, "Permission denied for [%s]\n", argv[1]);
+				exit(1);
+			}
+			else
+				pid = pgrep(argv[1]);
+		}
 		if (pid)
 		{
 			char *log;
