@@ -1,6 +1,6 @@
 # Monitor process and its supprocesses' MEM and CPU Usage
 
-## For echarts implementation please go to [mntr2](https://github.com/wulj2/mntr2) by wulj2.
+## For echarts implementation please go to <a href="https://github.com/wulj2/mntr2" target="_blank">mntr2</a> by wulj2.
 
 * MEM: RSS and SHR in g
 * CPU: Total in %
